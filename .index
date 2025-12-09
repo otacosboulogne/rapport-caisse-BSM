@@ -1,0 +1,948 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Rapport Caisse Boulogne-sur-Mer</title>
+  <style>
+    :root{
+      --bg:#fff7ed;
+      --card:#ffffff;
+      --accent:#f97316;
+      --accent-soft:#ffedd5;
+      --accent-strong:#c2410c;
+      --danger:#dc2626;
+      --danger-soft:#fee2e2;
+      --ok:#16a34a;
+      --ok-soft:#dcfce7;
+      --muted:#4b5563;
+      --border:#e5e7eb;
+      --shadow:0 10px 30px rgba(124, 45, 18, 0.25);
+      --radius-lg:14px;
+      --radius-md:10px;
+      --radius-sm:8px;
+      --transition-fast:150ms ease-out;
+    }
+
+    *{box-sizing:border-box}
+
+    body{
+      font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+      background:radial-gradient(circle at top, #fed7aa 0, #ffedd5 40%, #fff7ed 100%);
+      margin:0;
+      padding:32px 16px;
+      color:#111827;
+    }
+
+    .container{
+      max-width:960px;
+      margin:0 auto;
+    }
+
+    header{
+      display:flex;
+      align-items:flex-start;
+      gap:16px;
+      margin-bottom:20px;
+    }
+
+    h1{
+      margin:0;
+      font-size:22px;
+      letter-spacing:-0.02em;
+    }
+
+    .subtitle{
+      font-size:13px;
+      color:var(--muted);
+      margin-top:4px;
+    }
+
+    .tag{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      font-size:11px;
+      padding:4px 8px;
+      border-radius:999px;
+      background:rgba(249,115,22,0.08);
+      color:var(--accent-strong);
+      margin-top:6px;
+    }
+
+    .tag-dot{
+      width:7px;
+      height:7px;
+      border-radius:999px;
+      background:var(--accent);
+    }
+
+    .card{
+      background:var(--card);
+      border-radius:var(--radius-lg);
+      padding:20px 20px 18px;
+      box-shadow:var(--shadow);
+      border:1px solid rgba(248, 150, 75, 0.35);
+    }
+
+    .row{
+      display:flex;
+      gap:12px;
+      margin-bottom:12px;
+      flex-wrap:wrap;
+    }
+
+    .col{
+      flex:1;
+      min-width:210px;
+    }
+
+    label{
+      display:block;
+      font-size:13px;
+      color:#4b5563;
+      margin-bottom:6px;
+      font-weight:500;
+    }
+
+    .field-label-main{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
+    }
+
+    .label-badge{
+      font-size:11px;
+      padding:2px 6px;
+      border-radius:999px;
+      background:#fffbeb;
+      color:#b45309;
+    }
+
+    input[type=text],
+    input[type=number],
+    textarea,
+    select{
+      width:100%;
+      padding:9px 11px;
+      border:1px solid var(--border);
+      border-radius:var(--radius-md);
+      font-size:14px;
+      background:#fefce8;
+      transition:border-color var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast), transform var(--transition-fast);
+    }
+
+    input[type=text]:focus-visible,
+    input[type=number]:focus-visible,
+    textarea:focus-visible,
+    select:focus-visible,
+    button:focus-visible{
+      outline:none;
+      border-color:var(--accent);
+      box-shadow:0 0 0 1px rgba(249,115,22,0.5);
+      background:#ffffff;
+      transform:translateY(-1px);
+    }
+
+    textarea{
+      min-height:120px;
+      resize:vertical;
+    }
+
+    .muted{
+      font-size:12px;
+      color:var(--muted);
+    }
+
+    .actions{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:flex-end;
+      margin-top:16px;
+    }
+
+    button{
+      background:var(--accent);
+      color:#fff;
+      border:none;
+      padding:9px 16px;
+      border-radius:999px;
+      cursor:pointer;
+      font-weight:600;
+      font-size:14px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      box-shadow:0 10px 18px rgba(194,65,12,0.45);
+      transition:background var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast);
+    }
+
+    button:hover{
+      background:var(--accent-strong);
+      box-shadow:0 14px 26px rgba(180,83,9,0.55);
+      transform:translateY(-1px);
+    }
+
+    button.secondary{
+      background:#fffbeb;
+      border:1px solid #fed7aa;
+      color:#7c2d12;
+      box-shadow:none;
+    }
+
+    button.secondary:hover{
+      background:#fed7aa;
+      box-shadow:0 6px 14px rgba(248, 150, 75, 0.45);
+    }
+
+    button[disabled]{
+      opacity:0.6;
+      cursor:default;
+      box-shadow:none;
+      transform:none;
+    }
+
+    .hidden{display:none}
+
+    .note{
+      font-size:13px;
+      color:#111827;
+      background:#fffbeb;
+      padding:10px 11px;
+      border-radius:var(--radius-md);
+      border:1px solid #fed7aa;
+    }
+
+    .note-ghost{
+      background:transparent;
+      border-style:dashed;
+      color:var(--muted);
+    }
+
+    .badge-status{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:5px 10px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:600;
+    }
+
+    .badge-status-dot{
+      width:8px;
+      height:8px;
+      border-radius:999px;
+    }
+
+    .badge-status--ok{
+      background:var(--ok-soft);
+      color:var(--ok);
+    }
+    .badge-status--ok .badge-status-dot{background:var(--ok);}
+
+    .badge-status--neg{
+      background:var(--danger-soft);
+      color:var(--danger);
+    }
+    .badge-status--neg .badge-status-dot{background:var(--danger);}
+
+    .badge-status--info{
+      background:var(--accent-soft);
+      color:var(--accent-strong);
+    }
+    .badge-status--info .badge-status-dot{background:var(--accent);}
+
+    .small{
+      font-size:11px;
+      color:var(--muted);
+    }
+
+    #ecartAffiche{
+      margin-top:8px;
+      font-weight:700;
+      font-size:15px;
+    }
+
+    #result{
+      margin-top:10px;
+      min-height:20px;
+    }
+
+    #result .note{
+      animation:fadeInUp 200ms ease-out;
+    }
+
+    @keyframes fadeInUp{
+      from{opacity:0; transform:translateY(4px);}
+      to{opacity:1; transform:translateY(0);}
+    }
+
+    .section-title{
+      font-size:14px;
+      font-weight:600;
+      color:#111827;
+      margin:10px 0 6px;
+    }
+
+    .section-caption{
+      font-size:12px;
+      color:var(--muted);
+      margin-bottom:8px;
+    }
+
+    .logo{
+      border-radius:12px;
+      box-shadow:0 8px 18px rgba(249,115,22,0.7);
+    }
+
+    /* Grille de cases à cocher (process / disciplinaire) */
+    .checkbox-grid{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+    }
+    .checkbox-grid label{
+      display:flex;
+      align-items:flex-start;
+      gap:7px;
+      padding:7px 10px;
+      border-radius:var(--radius-md);
+      border:1px solid #fed7aa;
+      background:#fffbeb;
+      font-size:12px;
+      cursor:pointer;
+    }
+    .checkbox-grid input{
+      margin-top:2px;
+      accent-color:var(--accent);
+    }
+
+    /* === Caisses individuelles === */
+    #caissesSection{
+      margin-top:14px;
+      border-radius:var(--radius-lg);
+      background:linear-gradient(145deg, #111827 0, #020617 40%);
+      color:#f9fafb;
+      border:1px solid #1f2937;
+    }
+
+    #caissesSection .section-title{
+      color:#fefce8;
+    }
+
+    #caissesSection .section-caption{
+      color:#e5e7eb;
+    }
+
+    .caisse-card{
+      margin-top:10px;
+      border-radius:var(--radius-md);
+      padding:10px 12px 12px;
+      background:#fff7ed;
+      color:#111827;
+      border:1px solid #fed7aa;
+    }
+
+    .caisse-header-row{
+      margin-bottom:6px;
+      align-items:flex-end;
+    }
+
+    .caisse-remove-btn{
+      padding:6px 10px;
+      font-size:11px;
+    }
+
+    .caisse-table{
+      margin-top:6px;
+      border-radius:var(--radius-md);
+      overflow:hidden;
+      border:1px solid #fed7aa;
+      background:#ffffff;
+      font-size:12px;
+    }
+
+    .caisse-row,
+    .caisse-table-header{
+      display:grid;
+      grid-template-columns:2fr 1fr 1fr;
+      align-items:center;
+    }
+
+    .caisse-table-header{
+      background:#f97316;
+      color:#111827;
+      font-weight:600;
+      text-transform:uppercase;
+      letter-spacing:0.04em;
+      font-size:11px;
+    }
+
+    .caisse-cell{
+      padding:6px 8px;
+      border-bottom:1px solid #fed7aa;
+      border-right:1px solid #fed7aa;
+    }
+
+    .caisse-row:last-child .caisse-cell{
+      border-bottom:none;
+    }
+
+    .caisse-row .caisse-cell:last-child,
+    .caisse-table-header .caisse-cell:last-child{
+      border-right:none;
+    }
+
+    .caisse-row:nth-child(odd){
+      background:#fff7ed;
+    }
+
+    .caisse-row-total{
+      background:#fed7aa;
+      font-weight:600;
+    }
+
+    .caisse-row-ecart{
+      background:#22c55e;
+      color:#022c22;
+      font-weight:700;
+    }
+
+    .caisse-row-ecart .caisse-cell{
+      border-bottom:none;
+    }
+
+    .caisse-row-ecart .caisse-cell:nth-child(2),
+    .caisse-row-ecart .caisse-cell:nth-child(3){
+      text-align:center;
+    }
+
+    .caisse-row input[type=number]{
+      width:100%;
+      padding:4px 6px;
+      font-size:12px;
+      border-radius:6px;
+      background:#fefce8;
+    }
+
+    #caissesSummary{
+      margin-top:8px;
+      font-size:11px;
+      color:#e5e7eb;
+    }
+
+    #addCaisseBtn{
+      margin-top:8px;
+      padding:6px 10px;
+      font-size:12px;
+      border-radius:999px;
+      box-shadow:none;
+    }
+
+    @media (max-width:640px){
+      body{padding:18px 10px;}
+      .card{padding:16px;}
+      header{flex-direction:row;}
+      .logo{width:38px;height:38px;}
+      h1{font-size:19px;}
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <img
+        src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%23f97316'/%3E%3Ctext x='50%' y='55%' font-size='11' text-anchor='middle' fill='white' font-family='Arial' font-weight='700'%3EOT%3C/text%3E%3C/svg%3E"
+        alt="logo"
+        class="logo"
+      />
+      <div>
+        <h1>Rapport Caisse — Boulogne-sur-Mer</h1>
+        <p class="subtitle">
+          Formulaire pour signaler les écarts de caisse.
+        </p>
+      </div>
+    </header>
+
+    <form id="rapportForm" class="card" onsubmit="return false;" novalidate>
+      <div class="row">
+        <div class="col">
+          <div class="field-label-main">
+            <label for="montantTicketZ">Montant global Ticket&nbsp;Z (€)</label>
+            <span class="label-badge">Source caisse</span>
+          </div>
+          <input id="montantTicketZ" type="number" step="0.01" min="0" autocomplete="off" required />
+          <p class="small">Montant issu du ticket Z de fin de journée.</p>
+        </div>
+        <div class="col">
+          <div class="field-label-main">
+            <label for="montantReel">Montant global réel (€)</label>
+            <span class="label-badge">Comptage physique</span>
+          </div>
+          <input id="montantReel" type="number" step="0.01" min="0" autocomplete="off" required />
+          <p class="small">Montant compté réellement dans la caisse.</p>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col">
+          <label for="date">Date</label>
+          <input id="date" type="text" placeholder="jj/mm/aaaa" autocomplete="off" />
+          <p class="small">Par défaut&nbsp;: la date du jour.</p>
+        </div>
+        <div class="col">
+          <label for="auteur">Responsable de service</label>
+          <input id="auteur" type="text" placeholder="Nom et prénom" required />
+          <p class="small">Renseigner la personne qui valide le rapport.</p>
+        </div>
+      </div>
+
+      <div class="row" style="align-items:flex-end">
+        <div class="col">
+          <label>Écart détecté</label>
+          <p class="muted">L'écart s'affiche quand les deux montants sont renseignés.</p>
+          <div id="ecartAffiche">Écart : —</div>
+        </div>
+        <div class="col">
+          <label>Statut</label>
+          <div id="statut" class="badge-status badge-status--info" aria-live="polite">
+            <span class="badge-status-dot"></span>
+            <span>En attente de saisie</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION CAISSES -->
+      <div id="caissesSection" class="card hidden">
+        <div class="section-title">Répartition de l'écart par caisse / personne</div>
+        <p class="section-caption">
+          Ajoutez une caisse par personne impliquée dans l'écart (responsable, comptage et Ticket Z par mode de paiement).
+        </p>
+
+        <div id="caissesList"></div>
+
+        <button type="button" class="secondary" id="addCaisseBtn">+ Ajouter une caisse</button>
+        <p id="caissesSummary"></p>
+      </div>
+
+      <!-- PROCÉDURES SUIVIES -->
+      <div style="margin-top:14px">
+        <label>Procédures suivies (cocher si respectées)</label>
+        <p class="small">Cochez chaque point qui a bien été respecté pour cet incident de caisse.</p>
+        <div class="checkbox-grid">
+          <label>
+            <input type="checkbox" id="procShift" />
+            <span>Comptage avec l’équipier après chaque shift</span>
+          </label>
+          <label>
+            <input type="checkbox" id="procRespManager" />
+            <span>Responsable encaisse dans la caisse manager + TPE Manager</span>
+          </label>
+          <label>
+            <input type="checkbox" id="procEcartConstate" />
+            <span>Écart fait constater à l’équipier</span>
+          </label>
+          <label>
+            <input type="checkbox" id="procTelecollecte" />
+            <span>Vérification rapport télécollecte avec le montant global TPE</span>
+          </label>
+        </div>
+      </div>
+
+      <div style="margin-top:14px">
+        <label for="explication">Explication de l'incident et procédure suivie</label>
+        <textarea
+          id="explication"
+          placeholder="Décrivez précisément l'incident, les vérifications effectuées et les actions prises..."
+        ></textarea>
+      </div>
+
+      <!-- ZONE DISCIPLINAIRE -->
+      <div style="margin-top:14px">
+        <label>Zone disciplinaire</label>
+        <p class="small">Indiquez le statut de la fiche incident liée au salarié.</p>
+        <div class="checkbox-grid">
+          <label>
+            <input type="radio" name="discipline" value="a_faire" />
+            <span>Fiche incident à faire au salarié (si pas encore faite, à faire juste après / jour même)</span>
+          </label>
+          <label>
+            <input type="radio" name="discipline" value="faite" />
+            <span>Fiche incident faite au salarié</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button id="submitBtn" type="button">
+          <span id="submitLabel">Enregistrer le rapport</span>
+          <span id="submitSpinner" class="hidden">⏳</span>
+        </button>
+      </div>
+
+      <div id="result" aria-live="polite"></div>
+    </form>
+  </div>
+
+  <script>
+    const APPS_SCRIPT_WEBAPP_URL = 'https://script.google.com/macros/s/REPLACE_WITH_YOUR_URL/exec';
+
+    const euroFormatter = new Intl.NumberFormat('fr-FR', {
+      style: 'currency',
+      currency: 'EUR',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
+
+    const formatEuro = (n) => euroFormatter.format(Number(n || 0));
+
+    const montantTicketZEl = document.getElementById('montantTicketZ');
+    const montantReelEl = document.getElementById('montantReel');
+    const ecartAfficheEl = document.getElementById('ecartAffiche');
+    const statutEl = document.getElementById('statut');
+    const dateEl = document.getElementById('date');
+    const auteurEl = document.getElementById('auteur');
+    const resultEl = document.getElementById('result');
+    const submitBtn = document.getElementById('submitBtn');
+    const submitLabel = document.getElementById('submitLabel');
+    const submitSpinner = document.getElementById('submitSpinner');
+
+    const caissesSectionEl = document.getElementById('caissesSection');
+    const caissesListEl = document.getElementById('caissesList');
+    const addCaisseBtn = document.getElementById('addCaisseBtn');
+    const caissesSummaryEl = document.getElementById('caissesSummary');
+
+    const MODES_PAIEMENT = ['Tickets Restaurant','Chèques vacances','Carte bancaire','Espèces'];
+
+    (function initDate() {
+      if (!dateEl.value) {
+        dateEl.value = new Date().toLocaleDateString('fr-FR');
+      }
+    })();
+
+    function setStatus({ type = 'info', message }) {
+      statutEl.className = 'badge-status badge-status--' + type;
+      statutEl.innerHTML = `
+        <span class="badge-status-dot"></span>
+        <span>${message}</span>
+      `;
+    }
+
+    function getGlobalEcart() {
+      const z = parseFloat(montantTicketZEl.value || 0);
+      const r = parseFloat(montantReelEl.value || 0);
+      return r - z;
+    }
+
+    function updateEcart() {
+      const hasZ = montantTicketZEl.value !== '';
+      const hasR = montantReelEl.value !== '';
+
+      // Si une des deux cases n'est pas remplie : pas d'écart affiché
+      if (!hasZ || !hasR) {
+        ecartAfficheEl.textContent = 'Écart : —';
+        setStatus({ type: 'info', message: 'En attente de saisie des deux montants' });
+        caissesSectionEl.classList.add('hidden');
+        return;
+      }
+
+      const diff = getGlobalEcart();
+      ecartAfficheEl.textContent = 'Écart : ' + formatEuro(diff);
+
+      if (Math.abs(diff) < 0.005) {
+        setStatus({ type: 'ok', message: 'OK — aucun écart détecté' });
+        caissesSectionEl.classList.add('hidden');
+      } else {
+        const label = diff > 0 ? 'Écart POSITIF (surplus caisse)' : 'Écart NÉGATIF (manque en caisse)';
+        setStatus({ type: 'neg', message: label });
+        caissesSectionEl.classList.remove('hidden');
+        if (caissesListEl.children.length === 0) {
+          addCaisse();
+        }
+      }
+
+      updateCaissesSummary();
+    }
+
+    montantTicketZEl.addEventListener('input', updateEcart);
+    montantReelEl.addEventListener('input', updateEcart);
+
+    function addCaisse() {
+      const index = caissesListEl.children.length + 1;
+      const wrapper = document.createElement('div');
+      wrapper.className = 'caisse-card';
+      wrapper.dataset.index = index;
+
+      wrapper.innerHTML = `
+        <div class="row caisse-header-row">
+          <div class="col">
+            <label>Équipier/Responsable</label>
+            <input type="text" class="caisse-responsable" placeholder="Nom" />
+          </div>
+          <div class="col">
+            <label>Horaires</label>
+            <input type="text" class="caisse-horaires" placeholder="Ex : 11h30–14h30" />
+          </div>
+          <div class="col" style="max-width:140px;text-align:right;">
+            <button type="button" class="secondary caisse-remove-btn">Supprimer</button>
+          </div>
+        </div>
+
+        <div class="caisse-table">
+          <div class="caisse-table-header">
+            <div class="caisse-cell">Mode de paiement</div>
+            <div class="caisse-cell">Comptage</div>
+            <div class="caisse-cell">Ticket Z</div>
+          </div>
+          ${MODES_PAIEMENT.map(mode => `
+          <div class="caisse-row">
+            <div class="caisse-cell"><strong>${mode.toUpperCase()}</strong></div>
+            <div class="caisse-cell">
+              <input type="number" step="0.01" class="caisse-comptage" data-mode="${mode}" />
+            </div>
+            <div class="caisse-cell">
+              <input type="number" step="0.01" class="caisse-z" data-mode="${mode}" />
+            </div>
+          </div>
+          `).join('')}
+          <div class="caisse-row caisse-row-total">
+            <div class="caisse-cell"><strong>Résultat caisse</strong></div>
+            <div class="caisse-cell"><span class="caisse-total-comptage">0,00&nbsp;€</span></div>
+            <div class="caisse-cell"><span class="caisse-total-z">0,00&nbsp;€</span></div>
+          </div>
+          <div class="caisse-row caisse-row-ecart">
+            <div class="caisse-cell"><strong>Écart</strong></div>
+            <div class="caisse-cell" style="grid-column:2 / 4; text-align:center;">
+              <span class="caisse-ecart">0,00&nbsp;€</span>
+            </div>
+          </div>
+        </div>
+      `;
+
+      wrapper.querySelectorAll('.caisse-comptage, .caisse-z').forEach(input => {
+        input.addEventListener('input', () => updateCaisseTotals(wrapper));
+      });
+
+      wrapper.querySelector('.caisse-remove-btn').addEventListener('click', () => {
+        wrapper.remove();
+        updateCaissesSummary();
+      });
+
+      caissesListEl.appendChild(wrapper);
+    }
+
+    function updateCaisseTotals(card) {
+      let totalC = 0;
+      let totalZ = 0;
+
+      card.querySelectorAll('.caisse-comptage').forEach(input => {
+        totalC += parseFloat(input.value || 0);
+      });
+      card.querySelectorAll('.caisse-z').forEach(input => {
+        totalZ += parseFloat(input.value || 0);
+      });
+
+      const ecart = totalC - totalZ;
+
+      card.querySelector('.caisse-total-comptage').textContent = formatEuro(totalC);
+      card.querySelector('.caisse-total-z').textContent = formatEuro(totalZ);
+      card.querySelector('.caisse-ecart').textContent = formatEuro(ecart);
+
+      card.dataset.totalComptage = totalC.toFixed(2);
+      card.dataset.totalTicketZ = totalZ.toFixed(2);
+      card.dataset.ecart = ecart.toFixed(2);
+
+      updateCaissesSummary();
+    }
+
+    function updateCaissesSummary() {
+      const cards = Array.from(document.querySelectorAll('.caisse-card'));
+      if (cards.length === 0) {
+        caissesSummaryEl.textContent = '';
+        return;
+      }
+
+      let sommeEcarts = 0;
+      cards.forEach(c => {
+        sommeEcarts += parseFloat(c.dataset.ecart || 0);
+      });
+
+      const global = getGlobalEcart();
+      const diff = sommeEcarts - global;
+
+      let message = `Somme des écarts par caisse : ${formatEuro(sommeEcarts)} — Écart global : ${formatEuro(global)} `;
+      if (Math.abs(diff) > 0.01) {
+        message += ` (⚠ différence de ${formatEuro(diff)})`;
+      } else {
+        message += ' (OK)';
+      }
+      caissesSummaryEl.textContent = message;
+    }
+
+    addCaisseBtn.addEventListener('click', () => {
+      addCaisse();
+      updateCaissesSummary();
+    });
+
+    function collectCaisses() {
+      const cards = Array.from(document.querySelectorAll('.caisse-card'));
+      return cards.map(card => {
+        const responsable = card.querySelector('.caisse-responsable').value.trim();
+        const horaires = card.querySelector('.caisse-horaires').value.trim();
+
+        const lignes = MODES_PAIEMENT.map(mode => {
+          const comptageEl = card.querySelector(`.caisse-comptage[data-mode="${mode}"]`);
+          const zEl = card.querySelector(`.caisse-z[data-mode="${mode}"]`);
+          const comptage = parseFloat(comptageEl?.value || 0);
+          const ticketZ = parseFloat(zEl?.value || 0);
+          return {
+            mode,
+            comptage: comptage.toFixed(2),
+            ticketZ: ticketZ.toFixed(2)
+          };
+        });
+
+        let totalComptage = 0;
+        let totalTicketZ = 0;
+        lignes.forEach(l => {
+          totalComptage += parseFloat(l.comptage);
+          totalTicketZ += parseFloat(l.ticketZ);
+        });
+        const ecart = totalComptage - totalTicketZ;
+
+        return {
+          responsable,
+          horaires,
+          lignes,
+          totalComptage: totalComptage.toFixed(2),
+          totalTicketZ: totalTicketZ.toFixed(2),
+          ecart: ecart.toFixed(2)
+        };
+      });
+    }
+
+    function collectForm() {
+      const dateValue = dateEl.value || new Date().toLocaleDateString('fr-FR');
+      const ecartVal = getGlobalEcart();
+      const montantEcartVal = Math.abs(ecartVal);
+
+      const disciplineInput = document.querySelector('input[name="discipline"]:checked');
+      const discipline = disciplineInput ? disciplineInput.value : '';
+
+      return {
+        titre: 'Rapport Caisse Boulogne sur mer',
+        date: dateValue,
+        auteur: auteurEl.value.trim(),
+        montantTicketZ: parseFloat(montantTicketZEl.value || 0).toFixed(2),
+        montantReel: parseFloat(montantReelEl.value || 0).toFixed(2),
+        ecart: ecartVal.toFixed(2),
+        responsable: '',
+        montantEcart: montantEcartVal.toFixed(2),
+        natures: [],
+        naturePrecise: '',
+        procedures: {
+          comptage_shift: document.getElementById('procShift').checked,
+          resp_manager: document.getElementById('procRespManager').checked,
+          ecart_constate: document.getElementById('procEcartConstate').checked,
+          telecollecte: document.getElementById('procTelecollecte').checked
+        },
+        discipline: discipline,
+        explication: document.getElementById('explication').value,
+        caisses: collectCaisses()
+      };
+    }
+
+    function validateForm() {
+      let valid = true;
+      const errors = [];
+
+      if (!montantTicketZEl.value) {
+        valid = false;
+        errors.push('Le montant du Ticket Z est obligatoire.');
+      }
+      if (!montantReelEl.value) {
+        valid = false;
+        errors.push('Le montant réel de la caisse est obligatoire.');
+      }
+      if (!auteurEl.value.trim()) {
+        valid = false;
+        errors.push("Le nom du responsable de service est obligatoire.");
+      }
+
+      if (!valid) {
+        resultEl.innerHTML = `
+          <div class="note note-ghost">
+            ${errors.map((e) => '• ' + e).join('<br>')}
+          </div>
+        `;
+      } else {
+        resultEl.innerHTML = '';
+      }
+
+      return valid;
+    }
+
+    function setLoading(isLoading) {
+      submitBtn.disabled = isLoading;
+      submitSpinner.classList.toggle('hidden', !isLoading);
+      submitLabel.textContent = isLoading ? 'Enregistrement en cours...' : 'Enregistrer le rapport';
+    }
+
+    submitBtn.addEventListener('click', async () => {
+      if (!validateForm()) return;
+
+      setLoading(true);
+      setStatus({ type: 'info', message: 'Enregistrement du rapport en cours...' });
+
+      const data = collectForm();
+
+      try {
+        const res = await fetch(APPS_SCRIPT_WEBAPP_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+
+        const j = await res.json();
+
+        if (j.success) {
+          setStatus({ type: 'ok', message: 'Rapport enregistré avec succès' });
+          resultEl.innerHTML = `
+            <div class="note">
+              Rapport enregistré&nbsp;:
+              <a href="${j.fileUrl}" target="_blank" rel="noopener noreferrer">
+                Ouvrir le PDF dans Google Drive
+              </a>
+            </div>
+          `;
+        } else {
+          setStatus({ type: 'neg', message: "Erreur lors de l'enregistrement" });
+          resultEl.innerHTML = `
+            <div class="note note-ghost">
+              Erreur&nbsp;:
+              ${j.error || "Échec de l'enregistrement du rapport."}
+            </div>
+          `;
+        }
+      } catch (err) {
+        setStatus({ type: 'neg', message: 'Erreur réseau' });
+        resultEl.innerHTML = `
+          <div class="note note-ghost">
+            Erreur réseau&nbsp;: ${err.message}
+          </div>
+        `;
+      } finally {
+        setLoading(false);
+      }
+    });
+  </script>
+
+  <!-- Côté Apps Script, tu recevras maintenant:
+       - data.procedures.{comptage_shift, resp_manager, ecart_constate, telecollecte}
+       - data.discipline ("a_faire" ou "faite")
+       à exploiter dans le PDF si tu veux. -->
+</body>
+</html>
