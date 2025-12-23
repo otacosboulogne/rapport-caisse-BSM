@@ -1790,13 +1790,6 @@ function setLoading(isLoading) {
       submitSpinner.classList.toggle('hidden', !isLoading);
       submitLabel.textContent = isLoading ? 'Enregistrement en cours...' : 'Enregistrer le rapport';
     }
-submitBtn.addEventListener('click', () => {
-  if (!validateForm()) return;
-
-  setLoading(true);
-  setStatus({ type: 'info', message: 'Enregistrement du rapport en cours...' });
-
-  const data = collectForm();
 
   submitBtn.addEventListener('click', async () => {
   if (!validateForm()) return;
