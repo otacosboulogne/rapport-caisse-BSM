@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Rapport Caisse Boulogne-sur-Mer</title>
+  <title>Rapport RH et Caisse Boulogne-sur-Mer</title>
   <style>
     :root{
       --bg:#fff7ed;
@@ -195,6 +195,20 @@
     button.secondary:hover{
       background:#fed7aa;
       box-shadow:0 6px 14px rgba(248, 150, 75, 0.45);
+    }
+
+    button.danger{
+      background:var(--danger);
+      box-shadow:0 10px 18px rgba(220,38,38,0.35);
+    }
+    button.danger:hover{
+      background:#b91c1c;
+      box-shadow:0 14px 26px rgba(185,28,28,0.45);
+    }
+    button.mini{
+      padding:6px 10px;
+      font-size:11px;
+      box-shadow:none;
     }
 
     button[disabled]{
@@ -442,6 +456,30 @@
       box-shadow:none;
     }
 
+    /* ---- Heures supp (UI) ---- */
+    .section-divider{height:1px;background:var(--border);margin:32px 0;}
+    .inner-card{background:#fff;border:1px dashed var(--border);box-shadow:none;margin-top:14px;}
+    .section-subtitle{font-weight:900;margin-bottom:8px;color:var(--accent-strong);}
+    .radio-row{display:flex;gap:14px;flex-wrap:wrap;margin-top:6px;}
+    .two-col{display:flex;gap:10px;flex-wrap:wrap;}
+    .two-col > *{flex:1;min-width:180px;}
+    .kpi{border:1px solid var(--border);border-radius:12px;padding:10px 12px;background:#fff;}
+    .kpi-value{font-size:22px;font-weight:900;}
+    .kpi-note{font-size:12px;color:var(--muted);margin-top:6px;}
+    .kpi-note.ok{color:var(--ok);font-weight:900;}
+    .kpi-note.bad{color:var(--danger);font-weight:900;}
+    .hs-emp-list{display:flex;flex-direction:column;gap:12px;margin-top:10px;}
+    .hs-emp-item{border:1px solid var(--border);border-radius:12px;padding:12px;background:#fff;}
+    .hs-emp-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px;}
+    .hs-emp-title{font-weight:900;}
+    .hs-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+    .hs-grid .full{grid-column:1 / -1;}
+    .pill{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;border:1px solid var(--border);background:#fff;font-size:12px;}
+    .total-line{display:flex;gap:10px;justify-content:flex-end;align-items:center;}
+    .danger-text{color:var(--danger);font-weight:900;}
+    .ok-text{color:var(--ok);font-weight:900;}
+
+
     @media (max-width:640px){
       body{padding:18px 10px;}
       .card{padding:16px;}
@@ -460,14 +498,39 @@
         class="logo"
       />
       <div>
-        <h1>Rapport Caisse — Boulogne-sur-Mer</h1>
+        <h1>Rapport Caisse & RH — Boulogne-sur-Mer</h1>
         <p class="subtitle">
-          Formulaire pour signaler les écarts de caisse.
+          Formulaire pour signaler les écarts de caisse et déclarer les heures supplémentaires.
         </p>
       </div>
     </header>
 
     <form id="rapportForm" class="card" onsubmit="return false;" novalidate>
+      <!-- === DÉMARRAGE : 2 QUESTIONS === -->
+      <div class="row" style="margin-bottom:14px">
+        <div class="col">
+          <label>Questions (cocher)</label>
+          <p class="small">Après sélection, le(s) formulaire(s) s’affichent pour être remplis.</p>
+
+          <div class="checkbox-grid">
+            <label>
+              <input type="checkbox" id="qEcartCaisse" />
+              <span>Écart caisse dans le service</span>
+            </label>
+
+            <label>
+              <input type="checkbox" id="qHeuresSupp" />
+              <span>Heures supp dans le service à déclarer</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- === SECTION CAISSE (masquée tant que la question n’est pas cochée) === -->
+      <div id="caisseSectionGate" class="card inner-card hidden" style="margin-top:14px">
+        <div class="section-title">Rapport écart de caisse</div>
+        <p class="section-caption">À remplir uniquement si un écart de caisse est détecté.</p>
+
       <div class="row">
         <div class="col">
           <div class="field-label-main">
@@ -475,7 +538,7 @@
             <span class="label-badge">Source caisse</span>
           </div>
           <input id="montantTicketZ" type="number" step="0.01" min="0" autocomplete="off" required />
-          <p class="small">Montant issu du ticket Z de fin de journée.</p>
+          <p class="small">Montant issu du ticket Z TTC de fin de service du responsable.</p>
         </div>
         <div class="col">
           <div class="field-label-main">
@@ -483,7 +546,7 @@
             <span class="label-badge">Comptage physique</span>
           </div>
           <input id="montantReel" type="number" step="0.01" min="0" autocomplete="off" required />
-          <p class="small">Montant compté réellement dans la caisse.</p>
+          <p class="small">Montant compté réellement dans la caisse fin de service du responsable.</p>
         </div>
       </div>
 
@@ -491,7 +554,7 @@
         <div class="col">
           <label for="date">Date</label>
           <input id="date" type="text" placeholder="jj/mm/aaaa" autocomplete="off" />
-          <p class="small">Par défaut&nbsp;: la date du jour.</p>
+          <p class="small">À remplir Par défaut&nbsp;: la date du jour de l'écart.</p>
         </div>
         <div class="col">
           <label for="auteur">Responsable de service</label>
@@ -502,8 +565,8 @@
 
       <div class="row" style="align-items:flex-end">
         <div class="col">
-          <label>Écart détecté</label>
-          <p class="muted">L'écart s'affiche quand les deux montants sont renseignés.</p>
+          <label></label>
+          <p class="muted"></p>
           <div id="ecartAffiche">Écart : —</div>
         </div>
         <div class="col">
@@ -562,19 +625,139 @@
 
       <!-- ZONE DISCIPLINAIRE -->
       <div style="margin-top:14px">
-        <label>Zone disciplinaire</label>
-        <p class="small">Indiquez le statut de la fiche incident liée au salarié.</p>
-        <div class="checkbox-grid">
-          <label>
-            <input type="radio" name="discipline" value="a_faire" />
-            <span>Fiche incident à faire au salarié (si pas encore faite, à faire juste après / jour même)</span>
-          </label>
-          <label>
-            <input type="radio" name="discipline" value="faite" />
-            <span>Fiche incident faite au salarié</span>
-          </label>
-        </div>
+  <label>Zone disciplinaire</label>
+  <p class="small">Indiquez le statut de la fiche incident liée au salarié.</p>
+  <div class="checkbox-grid">
+    <label>
+      <input type="radio" name="discipline" value="a_faire" />
+      <span>Fiche incident à faire au salarié (si pas encore faite, à faire juste après / jour même)</span>
+    </label>
+    <label>
+      <input type="radio" name="discipline" value="faite" />
+      <span>Fiche incident faite au salarié</span>
+    </label>
+  </div>
+
+  <!-- ✅ Nouveau : explication qui s'affiche seulement si "a_faire" -->
+  <div id="disciplineDetails" class="hidden" style="margin-top:10px">
+    <label for="disciplineExplication">Explication / actions prévues</label>
+    <textarea
+      id="disciplineExplication"
+      placeholder="Ex : Date prévue, salarié concerné, contexte, action corrective..."
+    ></textarea>
+  </div>
+</div>
       </div>
+      <!-- === FIN SECTION CAISSE === -->
+
+      <!-- === SECTION HEURES SUPP (masquée tant que la question n’est pas cochée) === -->
+
+      <!-- === SÉPARATEUR (uniquement si 2 sections affichées) === -->
+      <div id="dualSectionDivider" class="section-divider hidden"></div>
+
+      <!-- === SECTION HEURES SUPP (masquée tant que la question n’est pas cochée) === -->
+      <div id="hsSectionGate" class="card hidden" style="margin-top:18px">
+        <div class="section-title">Rapport Heures supplémentaires</div>
+        <p class="section-caption">À remplir uniquement si des heures supp doivent être déclarées.</p>
+
+        <div class="row">
+          <div class="col">
+            <label for="hsResponsable">Responsable qui valide</label>
+            <input id="hsResponsable" type="text" placeholder="Nom du responsable" />
+          </div>
+          <div class="col">
+            <label for="hsDate">Date</label>
+            <input id="hsDate" type="text" placeholder="jj/mm/aaaa" />
+            <p class="small">La date de l'écart.</p>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col">
+            <label for="hsCA">CA fin de journée (€)</label>
+            <input id="hsCA" type="number" step="0.01" min="0" placeholder="Ex : 2500.00" />
+          </div>
+          <div class="col">
+            <label for="hsHeuresSkello">Heures planifiées (Skello)</label>
+            <input id="hsHeuresSkello" type="number" step="0.01" min="0" placeholder="Ex : 32.50" />
+          </div>
+        </div>
+
+        <div class="card inner-card">
+          <div class="section-subtitle">Organisation du service</div>
+
+          <div class="row">
+            <div class="col">
+              <label>La production est bien gérée (pas de rupture en plein rush) ?</label>
+              <div class="radio-row">
+                <label><input type="radio" name="prodOk" value="oui" checked> Oui</label>
+                <label><input type="radio" name="prodOk" value="non"> Non</label>
+              </div>
+              <div id="prodDetails" class="hidden" style="margin-top:8px">
+                <textarea id="prodDesc" placeholder="Décrire la rupture / le problème de production..."></textarea>
+              </div>
+            </div>
+
+            <div class="col">
+              <label>Présence d’un salarié inefficace ?</label>
+              <div class="radio-row">
+                <label><input type="radio" name="ineffOk" value="non" checked> Non</label>
+                <label><input type="radio" name="ineffOk" value="oui"> Oui</label>
+              </div>
+              <div id="ineffDetails" class="hidden" style="margin-top:8px">
+                <div class="two-col">
+                  <input id="ineffNom" type="text" placeholder="Quel salarié ?" />
+                  <input id="ineffPoste" type="text" placeholder="Quel poste ?" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col">
+              <label>Panne matériel / problème inhabituel ?</label>
+              <div class="radio-row">
+                <label><input type="radio" name="panneOk" value="non" checked> Non</label>
+                <label><input type="radio" name="panneOk" value="oui"> Oui</label>
+              </div>
+              <div id="panneDetails" class="hidden" style="margin-top:8px">
+                <textarea id="panneDesc" placeholder="Décrire le problème..."></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card inner-card">
+          <div class="section-subtitle">Heures supplémentaires déclarées</div>
+          <p class="small">Format obligatoire : <strong>xxHxxmin</strong> (ex : 18H05min)</p>
+
+          <div id="hsEmployees" class="hs-emp-list"></div>
+
+          <div class="row" style="align-items:center">
+            <div class="col">
+              <button type="button" class="btn secondary" id="hsAddEmployeeBtn">+ Ajouter un salarié</button>
+            </div>
+            <div class="col" style="text-align:right">
+              <div class="total-line">
+                <span>Total heures supp :</span>
+                <strong id="hsTotalHeures">0,00h</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card inner-card" style="margin-top:14px">
+          <div class="section-subtitle">Productivité</div>
+          <div class="kpi">
+            <div class="kpi-value" id="hsProductiviteValue">—</div>
+            <div class="kpi-note" id="hsConclusion">Renseigne le CA, les heures Skello et les heures supp.</div>
+          </div>
+        </div>
+
+      </div>
+
+
+
 
       <div class="actions">
         <button id="submitBtn" type="button">
@@ -588,7 +771,7 @@
   </div>
 
   <script>
-    const APPS_SCRIPT_WEBAPP_URL = 'https://script.google.com/macros/s/REPLACE_WITH_YOUR_URL/exec';
+    const APPS_SCRIPT_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbwEnbCrzl4OKZ0wmh3klnHzQ8SwJwSP40AWctDOo8EzS2kv8dJZAPioGpp84b5VeVRG/exec';
 
     const euroFormatter = new Intl.NumberFormat('fr-FR', {
       style: 'currency',
@@ -610,6 +793,54 @@
     const submitLabel = document.getElementById('submitLabel');
     const submitSpinner = document.getElementById('submitSpinner');
 
+    // --- Zone disciplinaire (explication si "a_faire") ---
+    const disciplineDetailsEl = document.getElementById('disciplineDetails');
+    const disciplineExplicationEl = document.getElementById('disciplineExplication');
+
+    function toggleDisciplineDetails(){
+      const selected = document.querySelector('input[name="discipline"]:checked')?.value || '';
+      const show = (selected === 'a_faire');
+      if (disciplineDetailsEl) disciplineDetailsEl.classList.toggle('hidden', !show);
+    }
+
+    document.addEventListener('change', (e) => {
+      if (e.target && e.target.name === 'discipline') {
+        toggleDisciplineDetails();
+      }
+    });
+
+    // Gates (2 questions) + sections
+    const qEcartCaisseEl = document.getElementById('qEcartCaisse');
+    const qHeuresSuppEl = document.getElementById('qHeuresSupp');
+    const caisseSectionGateEl = document.getElementById('caisseSectionGate');
+    const hsSectionGateEl = document.getElementById('hsSectionGate');
+
+    // Champs Heures supp (nouvelle version)
+    const dualSectionDividerEl = document.getElementById('dualSectionDivider');
+
+    const hsResponsableEl = document.getElementById('hsResponsable');
+    const hsDateEl = document.getElementById('hsDate');
+    const hsCAEl = document.getElementById('hsCA');
+    const hsHeuresSkelloEl = document.getElementById('hsHeuresSkello');
+
+    const hsEmployeesEl = document.getElementById('hsEmployees');
+    const hsAddEmployeeBtnEl = document.getElementById('hsAddEmployeeBtn');
+    const hsTotalHeuresEl = document.getElementById('hsTotalHeures');
+
+    const hsProductiviteValueEl = document.getElementById('hsProductiviteValue');
+    const hsConclusionEl = document.getElementById('hsConclusion');
+
+    const ineffDetailsEl = document.getElementById('ineffDetails');
+
+    const prodDetailsEl = document.getElementById('prodDetails');
+    const prodDescEl = document.getElementById('prodDesc');
+    const ineffNomEl = document.getElementById('ineffNom');
+    const ineffPosteEl = document.getElementById('ineffPoste');
+
+    const panneDetailsEl = document.getElementById('panneDetails');
+    const panneDescEl = document.getElementById('panneDesc');
+
+
     const caissesSectionEl = document.getElementById('caissesSection');
     const caissesListEl = document.getElementById('caissesList');
     const addCaisseBtn = document.getElementById('addCaisseBtn');
@@ -623,7 +854,430 @@
       }
     })();
 
-    function setStatus({ type = 'info', message }) {
+
+
+    (function initDateHS(){
+      if (hsDateEl && !hsDateEl.value) {
+        hsDateEl.value = new Date().toLocaleDateString('fr-FR');
+      }
+    })()
+
+    // ---------- Heures supp : logique ----------
+    const TIME_RE = /^([01]?\d|2[0-3])\s*[Hh]\s*([0-5]\d)\s*(?:min)?$/;
+
+    function parseTimeParts(v){
+      const value = (v || '').trim();
+      const m = TIME_RE.exec(value);
+      if(!m) return null;
+      const hh = parseInt(m[1], 10);
+      const mm = parseInt(m[2], 10);
+      return { hh, mm };
+    }
+
+    function parseTimeToMinutes(v){
+      const parts = parseTimeParts(v);
+      if(!parts) return null;
+      return parts.hh * 60 + parts.mm;
+    }
+
+    function normalizeTimeString(v){
+      const parts = parseTimeParts(v);
+      if(!parts) return null;
+      const hh = String(parts.hh).padStart(2,'0');
+      const mm = String(parts.mm).padStart(2,'0');
+      return `${hh}H${mm}min`;
+    }
+
+    function diffMinutes(startMin, endMin){
+      if (startMin === null || endMin === null) return null;
+      let d = endMin - startMin;
+      if (d < 0) d += 24 * 60; // au cas où ça passe minuit
+      return d;
+    }
+
+    function formatHoursFR(hours){
+      const n = Number(hours || 0);
+      const s = n.toFixed(2).replace('.', ',');
+      return s + 'h';
+    }
+
+    function setConclusion(prod){
+      hsConclusionEl.classList.remove('ok','bad');
+      if (prod === null){
+        hsConclusionEl.textContent = "Renseigne le CA, les heures Skello et les heures supp.";
+        return;
+      }
+      if (prod >= 70){
+        hsConclusionEl.classList.add('ok');
+        hsConclusionEl.textContent = "✅ Productivité ≥ 70€ : les heures supp sont justifiées.";
+      } else {
+        hsConclusionEl.classList.add('bad');
+        hsConclusionEl.textContent = "⛔ Productivité < 70€ : les heures supp ne sont pas justifiées.";
+      }
+    }
+
+    function getRadioValue(name){
+      const el = document.querySelector(`input[name="${name}"]:checked`);
+      return el ? el.value : '';
+    }
+
+    function toggleDetailsByRadio(){
+      const prod = getRadioValue('prodOk') === 'non';
+      const ineff = getRadioValue('ineffOk') === 'oui';
+      const panne = getRadioValue('panneOk') === 'oui';
+      if (prodDetailsEl) prodDetailsEl.classList.toggle('hidden', !prod);
+      if (ineffDetailsEl) ineffDetailsEl.classList.toggle('hidden', !ineff);
+      if (panneDetailsEl) panneDetailsEl.classList.toggle('hidden', !panne);
+    }
+
+    document.addEventListener('change', (e) => {
+      if (e.target && (e.target.name === 'prodOk' || e.target.name === 'ineffOk' || e.target.name === 'panneOk')) {
+        toggleDetailsByRadio();
+
+    // Recalcul de la productivité en direct
+    if (hsCAEl) hsCAEl.addEventListener('input', recomputeHS);
+    if (hsHeuresSkelloEl) hsHeuresSkelloEl.addEventListener('input', recomputeHS);
+
+      }
+    });
+    toggleDetailsByRadio();
+
+    // Recalcul de la productivité en direct
+    if (hsCAEl) hsCAEl.addEventListener('input', recomputeHS);
+    if (hsHeuresSkelloEl) hsHeuresSkelloEl.addEventListener('input', recomputeHS);
+
+
+    let hsEmpCounter = 0;
+
+    function employeeTemplate(id){
+      const wrapper = document.createElement('div');
+      wrapper.className = 'hs-emp-item';
+      wrapper.dataset.empId = id;
+
+      wrapper.innerHTML = `
+        <div class="hs-emp-head">
+          <div class="hs-emp-title">Salarié #${id}</div>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <button type="button" class="secondary mini" data-duplicate-emp="${id}">Dupliquer</button>
+            <button type="button" class="danger mini" data-remove-emp="${id}">Supprimer</button>
+          </div>
+        </div>
+
+        <div class="hs-grid">
+          <div>
+            <label>Poste occupé (salarié HS)</label>
+            <input type="text" class="hs-poste" placeholder="Ex : Envoie / Pliage / Toaster / Caisse" />
+          </div>
+
+          <div>
+            <label>Nom du salarié</label>
+            <input type="text" class="hs-nom" placeholder="Nom et prénom" />
+          </div>
+
+          <div>
+            <label>Heure début HS</label>
+            <input type="text" class="hs-debut" placeholder="Ex : 18H05min" />
+          </div>
+
+          <div>
+            <label>Heure fin HS</label>
+            <input type="text" class="hs-fin" placeholder="Ex : 19H20min" />
+          </div>
+
+          <div>
+            <label>Durée (total heure supp salarié)</label>
+            <input type="text" class="hs-duree" placeholder="0,00h" readonly />
+          </div>
+
+          <div class="full">
+            <label>Motif de rajout</label>
+            <div class="radio-row">
+              <label class="pill"><input type="radio" name="motif_${id}" value="1"> 1) Salarié absent (arrêt)</label>
+              <label class="pill"><input type="radio" name="motif_${id}" value="2"> 2) Salarié absent (autre)</label>
+              <label class="pill"><input type="radio" name="motif_${id}" value="3"> 3) Retard significatif</label>
+              <label class="pill"><input type="radio" name="motif_${id}" value="4"> 4) Sous-effectif</label>
+              <label class="pill"><input type="radio" name="motif_${id}" value="5"> 5) Rush fin de service</label>
+            </div>
+
+            <!-- Motif 1 / 2 : salarié absent -->
+            <div class="hs-motif-abs hidden" style="margin-top:10px">
+              <div class="two-col">
+                <input type="text" class="hs-abs-nom" placeholder="Nom du salarié absent" />
+                <input type="text" class="hs-abs-poste" placeholder="Poste du salarié absent" />
+              </div>
+              <div class="two-col" style="margin-top:10px">
+                <div>
+                  <label>Shift prévu du salarié absent (début de service)</label>
+                  <input type="text" class="hs-prevu-debut" placeholder="Ex : 18H00min" />
+                </div>
+                <div>
+                  <label>Shift prévu du salarié absent (fin de service)</label>
+                  <input type="text" class="hs-prevu-fin" placeholder="Ex : 22H00min" />
+                </div>
+              </div>
+            </div>
+
+            <!-- Motif 3 : retard -->
+            <div class="hs-motif-retard hidden" style="margin-top:10px">
+              <div class="two-col">
+                <input type="text" class="hs-retard-nom" placeholder="Quel salarié est en retard ?" />
+                <input type="number" class="hs-retard-min" min="1" step="1" placeholder="Retard (min)" />
+              </div>
+              <div style="margin-top:10px">
+                <input type="text" class="hs-retard-moment" placeholder="Quel moment dans le service ? (ex : début / milieu / fin, poste concerné…)" />
+              </div>
+            </div>
+
+            <!-- Motif 4 / 5 : détail -->
+            <div class="hs-motif-detail hidden" style="margin-top:10px">
+              <label class="hs-detail-label">Détails</label>
+              <textarea class="hs-detail" placeholder="Décrire précisément..."></textarea>
+            </div>
+
+            <div style="margin-top:10px">
+              <label>Commentaire (Plus d'information concernant le service)</label>
+              <textarea class="hs-comment" placeholder="Détails complémentaires..."></textarea>
+            </div>
+          </div>
+        </div>
+      `;
+
+      // init motif blocks (none selected yet)
+      updateMotifBlocks(wrapper, '');
+
+      // listeners
+      wrapper.addEventListener('input', (e) => {
+        if (e.target.classList.contains('hs-debut') || e.target.classList.contains('hs-fin')) {
+          computeEmployeeDuration(wrapper);
+          recomputeHS();
+        }
+      });
+
+      wrapper.addEventListener('change', (e) => {
+        if (e.target && e.target.name === `motif_${id}`){
+          updateMotifBlocks(wrapper, e.target.value);
+        }
+        recomputeHS();
+      });
+
+      // Normalise les heures (format canonique : XXHXXmin) à la sortie du champ
+      wrapper.addEventListener('focusout', (e) => {
+        const t = e.target;
+        if (!t || !t.classList) return;
+        const isTimeField =
+          t.classList.contains('hs-debut') ||
+          t.classList.contains('hs-fin') ||
+          t.classList.contains('hs-prevu-debut') ||
+          t.classList.contains('hs-prevu-fin');
+        if (!isTimeField) return;
+
+        const norm = normalizeTimeString(t.value);
+        if (norm) t.value = norm;
+
+        // recalcul si besoin (utile après normalisation)
+        if (t.classList.contains('hs-debut') || t.classList.contains('hs-fin')) {
+          computeEmployeeDuration(wrapper);
+        }
+        recomputeHS();
+      });
+
+      return wrapper;
+    }
+
+
+    function updateMotifBlocks(wrapper, motifCode){
+      const absWrap = wrapper.querySelector('.hs-motif-abs');
+      const retWrap = wrapper.querySelector('.hs-motif-retard');
+      const detWrap = wrapper.querySelector('.hs-motif-detail');
+      const detLabel = wrapper.querySelector('.hs-detail-label');
+
+      const isAbs = (motifCode === '1' || motifCode === '2');
+      const isRet = (motifCode === '3');
+      const isDet = (motifCode === '4' || motifCode === '5');
+
+      if (absWrap) absWrap.classList.toggle('hidden', !isAbs);
+      if (retWrap) retWrap.classList.toggle('hidden', !isRet);
+      if (detWrap) detWrap.classList.toggle('hidden', !isDet);
+
+      if (detLabel){
+        if (motifCode === '4') detLabel.textContent = "Sous-effectif : détails";
+        else if (motifCode === '5') detLabel.textContent = "Rush fin de service : détails";
+        else detLabel.textContent = "Détails";
+      }
+    }
+
+    function extractEmployeeValues(wrapper){
+      const empId = wrapper.dataset.empId || '';
+      const motif = (wrapper.querySelector(`input[name="motif_${empId}"]:checked`)?.value || '').trim();
+      return {
+        poste: (wrapper.querySelector('.hs-poste')?.value || '').trim(),
+        nom: (wrapper.querySelector('.hs-nom')?.value || '').trim(),
+        debut: (wrapper.querySelector('.hs-debut')?.value || '').trim(),
+        fin: (wrapper.querySelector('.hs-fin')?.value || '').trim(),
+        motif,
+        abs_nom: (wrapper.querySelector('.hs-abs-nom')?.value || '').trim(),
+        abs_poste: (wrapper.querySelector('.hs-abs-poste')?.value || '').trim(),
+        prevu_debut: (wrapper.querySelector('.hs-prevu-debut')?.value || '').trim(),
+        prevu_fin: (wrapper.querySelector('.hs-prevu-fin')?.value || '').trim(),
+        retard_nom: (wrapper.querySelector('.hs-retard-nom')?.value || '').trim(),
+        retard_min: (wrapper.querySelector('.hs-retard-min')?.value || '').trim(),
+        retard_moment: (wrapper.querySelector('.hs-retard-moment')?.value || '').trim(),
+        detail: (wrapper.querySelector('.hs-detail')?.value || '').trim(),
+        comment: (wrapper.querySelector('.hs-comment')?.value || '').trim(),
+      };
+    }
+
+    function applyEmployeeValues(wrapper, values){
+      if (!values) return;
+
+      wrapper.querySelector('.hs-poste').value = values.poste || '';
+      wrapper.querySelector('.hs-nom').value = values.nom || '';
+      wrapper.querySelector('.hs-debut').value = values.debut || '';
+      wrapper.querySelector('.hs-fin').value = values.fin || '';
+
+      const empId = wrapper.dataset.empId || '';
+      if (values.motif){
+        const m = wrapper.querySelector(`input[name="motif_${empId}"][value="${values.motif}"]`);
+        if (m) m.checked = true;
+      }
+      updateMotifBlocks(wrapper, values.motif || '');
+
+      const setVal = (sel, v) => { const el = wrapper.querySelector(sel); if (el) el.value = v || ''; };
+      setVal('.hs-abs-nom', values.abs_nom);
+      setVal('.hs-abs-poste', values.abs_poste);
+      setVal('.hs-prevu-debut', values.prevu_debut);
+      setVal('.hs-prevu-fin', values.prevu_fin);
+      setVal('.hs-retard-nom', values.retard_nom);
+      setVal('.hs-retard-min', values.retard_min);
+      setVal('.hs-retard-moment', values.retard_moment);
+      setVal('.hs-detail', values.detail);
+      setVal('.hs-comment', values.comment);
+
+      computeEmployeeDuration(wrapper);
+    }
+
+
+    function addEmployee(){
+      hsEmpCounter += 1;
+      const item = employeeTemplate(hsEmpCounter);
+      hsEmployeesEl.appendChild(item);
+      recomputeHS();
+    }
+
+    function removeEmployee(empId){
+      const el = hsEmployeesEl.querySelector(`[data-emp-id="${empId}"]`);
+      if (el) el.remove();
+      recomputeHS();
+    }
+
+    function duplicateEmployee(empId){
+      const src = hsEmployeesEl.querySelector(`[data-emp-id="${empId}"]`);
+      if (!src) return;
+      const values = extractEmployeeValues(src);
+
+      hsEmpCounter += 1;
+      const item = employeeTemplate(hsEmpCounter);
+      hsEmployeesEl.appendChild(item);
+      applyEmployeeValues(item, values);
+      recomputeHS();
+    }
+
+    function computeEmployeeDuration(wrapper){
+      const debut = wrapper.querySelector('.hs-debut')?.value || '';
+      const fin = wrapper.querySelector('.hs-fin')?.value || '';
+      const dMin = parseTimeToMinutes(debut);
+      const fMin = parseTimeToMinutes(fin);
+      const diff = diffMinutes(dMin, fMin);
+      const dureeEl = wrapper.querySelector('.hs-duree');
+
+      if (diff === null){
+        if (dureeEl) dureeEl.value = '';
+        return null;
+      }
+      const hours = diff / 60;
+      if (dureeEl) dureeEl.value = formatHoursFR(hours);
+      return hours;
+    }
+
+    function getTotalHS(){
+      let total = 0;
+      const items = hsEmployeesEl ? Array.from(hsEmployeesEl.querySelectorAll('.hs-emp-item')) : [];
+      for (const it of items){
+        const h = computeEmployeeDuration(it);
+        if (typeof h === 'number' && isFinite(h)) total += h;
+      }
+      return total;
+    }
+
+    function recomputeHS(){
+      if (!hsSectionGateEl) return;
+
+      const totalHS = getTotalHS();
+      if (hsTotalHeuresEl) hsTotalHeuresEl.textContent = formatHoursFR(totalHS);
+
+      const ca = parseFloat(hsCAEl?.value || '');
+      const skello = parseFloat(hsHeuresSkelloEl?.value || '');
+      const denom = (isFinite(skello) ? skello : 0) + totalHS;
+
+      let prod = null;
+      if (isFinite(ca) && ca > 0 && denom > 0){
+        prod = (ca / 1.1) / denom;
+        hsProductiviteValueEl.textContent = prod.toFixed(2).replace('.', ',') + ' € / h';
+      } else {
+        hsProductiviteValueEl.textContent = '—';
+      }
+      setConclusion(prod);
+    }
+
+    if (hsAddEmployeeBtnEl) {
+      hsAddEmployeeBtnEl.addEventListener('click', addEmployee);
+    }
+
+    document.addEventListener('click', (e) => {
+      const removeBtn = e.target?.closest?.('[data-remove-emp]');
+      if (removeBtn){
+        const id = removeBtn.getAttribute('data-remove-emp');
+        removeEmployee(id);
+        return;
+      }
+      const dupBtn = e.target?.closest?.('[data-duplicate-emp]');
+      if (dupBtn){
+        const id = dupBtn.getAttribute('data-duplicate-emp');
+        duplicateEmployee(id);
+        return;
+      }
+    });
+;
+
+    function updateGates(){
+      const showCaisse = !!(qEcartCaisseEl && qEcartCaisseEl.checked);
+      const showHS = !!(qHeuresSuppEl && qHeuresSuppEl.checked);
+
+      if (caisseSectionGateEl) caisseSectionGateEl.classList.toggle('hidden', !showCaisse);
+      if (hsSectionGateEl) hsSectionGateEl.classList.toggle('hidden', !showHS);
+
+      // Séparateur si les 2 rapports sont cochés
+      if (dualSectionDividerEl) {
+        dualSectionDividerEl.classList.toggle('hidden', !(showCaisse && showHS));
+      }
+
+      // Si HS vient d’être affiché, on initialise au moins 1 salarié
+      if (showHS && hsEmployeesEl && hsEmployeesEl.children.length === 0) {
+        addEmployee();
+      }
+
+      // Recalcule KPI
+      if (showHS) recomputeHS();
+    }
+
+    if (qEcartCaisseEl) qEcartCaisseEl.addEventListener('change', updateGates);
+    if (qHeuresSuppEl) qHeuresSuppEl.addEventListener('change', updateGates);
+
+    // au chargement
+    updateGates();
+    toggleDisciplineDetails();
+
+function setStatus({ type = 'info', message }) {
       statutEl.className = 'badge-status badge-status--' + type;
       statutEl.innerHTML = `
         <span class="badge-status-dot"></span>
@@ -824,6 +1478,93 @@
       });
     }
 
+
+    function collectHeuresSupp(){
+      const isHS = !!(qHeuresSuppEl && qHeuresSuppEl.checked);
+      if (!isHS) {
+        return { active:false };
+      }
+
+      const employees = [];
+      const items = hsEmployeesEl ? Array.from(hsEmployeesEl.querySelectorAll('.hs-emp-item')) : [];
+      for (const it of items){
+        const empId = it.dataset.empId || '';
+        const poste = (it.querySelector('.hs-poste')?.value || '').trim();
+        const nom = (it.querySelector('.hs-nom')?.value || '').trim();
+        const debut = (it.querySelector('.hs-debut')?.value || '').trim();
+        const fin = (it.querySelector('.hs-fin')?.value || '').trim();
+
+        const mEl = it.querySelector(`input[name="motif_${empId}"]:checked`);
+        const motifCode = mEl ? mEl.value : '';
+
+        const abs_nom = (it.querySelector('.hs-abs-nom')?.value || '').trim();
+        const abs_poste = (it.querySelector('.hs-abs-poste')?.value || '').trim();
+        const prevu_debut = (it.querySelector('.hs-prevu-debut')?.value || '').trim();
+        const prevu_fin = (it.querySelector('.hs-prevu-fin')?.value || '').trim();
+
+        const retard_nom = (it.querySelector('.hs-retard-nom')?.value || '').trim();
+        const retard_min = (it.querySelector('.hs-retard-min')?.value || '').trim();
+        const retard_moment = (it.querySelector('.hs-retard-moment')?.value || '').trim();
+
+        const detail = (it.querySelector('.hs-detail')?.value || '').trim();
+        const comment = (it.querySelector('.hs-comment')?.value || '').trim();
+
+        const hours = computeEmployeeDuration(it);
+        employees.push({
+          poste,
+          nom,
+          debut,
+          fin,
+          nb_heures: (typeof hours === 'number' && isFinite(hours)) ? hours.toFixed(2) : '',
+          motif_code: motifCode,
+
+          absent_salarie_nom: (motifCode === '1' || motifCode === '2') ? abs_nom : '',
+          absent_salarie_poste: (motifCode === '1' || motifCode === '2') ? abs_poste : '',
+          shift_prevu_debut: (motifCode === '1' || motifCode === '2') ? prevu_debut : '',
+          shift_prevu_fin: (motifCode === '1' || motifCode === '2') ? prevu_fin : '',
+
+          retard_salarie_nom: (motifCode === '3') ? retard_nom : '',
+          retard_duree_min: (motifCode === '3') ? retard_min : '',
+          retard_moment: (motifCode === '3') ? retard_moment : '',
+
+          detail: (motifCode === '4' || motifCode === '5') ? detail : '',
+          commentaire: comment
+        });
+      }
+
+      const totalHS = getTotalHS();
+      const ca = parseFloat(hsCAEl?.value || '');
+      const skello = parseFloat(hsHeuresSkelloEl?.value || '');
+      const denom = (isFinite(skello) ? skello : 0) + totalHS;
+
+      let productivite = '';
+      if (isFinite(ca) && ca > 0 && denom > 0){
+        productivite = ((ca / 1.1) / denom).toFixed(2);
+      }
+
+      return {
+        active: true,
+        responsable_validation: (hsResponsableEl?.value || '').trim(),
+        date: (hsDateEl?.value || '').trim(),
+        ca_journee: isFinite(ca) ? ca.toFixed(2) : '',
+        heures_skello: isFinite(skello) ? skello.toFixed(2) : '',
+        total_heures_supp: totalHS.toFixed(2),
+        productivite: productivite, // €/h (formule cachée)
+        conclusion: productivite ? (parseFloat(productivite) >= 70 ? 'justifiee' : 'non_justifiee') : '',
+        organisation: {
+          production_ok: getRadioValue('prodOk'),
+          production_description: (getRadioValue('prodOk') === 'non') ? (prodDescEl?.value || '').trim() : '',
+          inefficace: getRadioValue('ineffOk'),
+          inefficace_nom: (ineffNomEl?.value || '').trim(),
+          inefficace_poste: (ineffPosteEl?.value || '').trim(),
+          panne: getRadioValue('panneOk'),
+          panne_description: (panneDescEl?.value || '').trim()
+        },
+        employees
+      };
+    }
+
+
     function collectForm() {
       const dateValue = dateEl.value || new Date().toLocaleDateString('fr-FR');
       const ecartVal = getGlobalEcart();
@@ -850,27 +1591,187 @@
           telecollecte: document.getElementById('procTelecollecte').checked
         },
         discipline: discipline,
+        discipline_explication: (discipline === 'a_faire')
+          ? (document.getElementById('disciplineExplication')?.value || '')
+          : '',
         explication: document.getElementById('explication').value,
-        caisses: collectCaisses()
-      };
+
+        questions: {
+          ecart_caisse: !!(qEcartCaisseEl && qEcartCaisseEl.checked),
+          heures_supp: !!(qHeuresSuppEl && qHeuresSuppEl.checked)
+        },
+
+        hs: collectHeuresSupp(),
+
+        caisses: collectCaisses()};
     }
 
     function validateForm() {
       let valid = true;
       const errors = [];
 
-      if (!montantTicketZEl.value) {
+      const isCaisse = !!(qEcartCaisseEl && qEcartCaisseEl.checked);
+      const isHS = !!(qHeuresSuppEl && qHeuresSuppEl.checked);
+
+      if (!isCaisse && !isHS) {
         valid = false;
-        errors.push('Le montant du Ticket Z est obligatoire.');
+        errors.push("Coche au moins une option : Écart caisse ou Heures supp.");
       }
-      if (!montantReelEl.value) {
-        valid = false;
-        errors.push('Le montant réel de la caisse est obligatoire.');
+
+      // Valider uniquement la partie CAISSE si elle est demandée
+      if (isCaisse) {
+        if (!montantTicketZEl.value) {
+          valid = false;
+          errors.push('Le montant du Ticket Z est obligatoire.');
+        }
+        if (!montantReelEl.value) {
+          valid = false;
+          errors.push('Le montant réel de la caisse est obligatoire.');
+        }
+        if (!auteurEl.value.trim()) {
+          valid = false;
+          errors.push("Le nom du responsable de service est obligatoire.");
+        }
+
+        // Zone disciplinaire : si "a_faire", explication obligatoire
+        const disciplineVal = document.querySelector('input[name="discipline"]:checked')?.value || '';
+        if (disciplineVal === 'a_faire') {
+          const txt = document.getElementById('disciplineExplication')?.value?.trim() || '';
+          if (!txt) {
+            valid = false;
+            errors.push("Zone disciplinaire : ajoute une explication (si la fiche incident est à faire).");
+          }
+        }
       }
-      if (!auteurEl.value.trim()) {
-        valid = false;
-        errors.push("Le nom du responsable de service est obligatoire.");
+
+      // Valider uniquement la partie HEURES SUPP si elle est demandée
+      if (isHS) {
+        if (!hsResponsableEl.value.trim()) {
+          valid = false;
+          errors.push("Heures supp : le responsable qui valide est obligatoire.");
+        }
+        if (!hsDateEl.value.trim()) {
+          valid = false;
+          errors.push("Heures supp : la date est obligatoire.");
+        }
+        if (!hsCAEl.value) {
+          valid = false;
+          errors.push("Heures supp : le CA fin de journée est obligatoire.");
+        }
+        if (!hsHeuresSkelloEl.value) {
+          valid = false;
+          errors.push("Heures supp : les heures Skello sont obligatoires.");
+        }
+
+        // Organisation
+        if (getRadioValue('prodOk') === 'non') {
+          if (!prodDescEl?.value?.trim()) {
+            valid = false;
+            errors.push("Organisation : décris le problème de production (si 'Non').");
+          }
+        }
+        if (getRadioValue('ineffOk') === 'oui') {
+          if (!ineffNomEl.value.trim() || !ineffPosteEl.value.trim()) {
+            valid = false;
+            errors.push("Organisation : indique le salarié inefficace et son poste.");
+          }
+        }
+        if (getRadioValue('panneOk') === 'oui') {
+          if (!panneDescEl.value.trim()) {
+            valid = false;
+            errors.push("Organisation : décris la panne/problème inhabituel.");
+          }
+        }
+
+        // Salariés HS
+        const items = hsEmployeesEl ? Array.from(hsEmployeesEl.querySelectorAll('.hs-emp-item')) : [];
+        if (items.length === 0) {
+          valid = false;
+          errors.push("Heures supp : ajoute au moins un salarié.");
+        }
+
+        items.forEach((it, idx) => {
+          const num = idx + 1;
+          const poste = (it.querySelector('.hs-poste')?.value || '').trim();
+          const nom = (it.querySelector('.hs-nom')?.value || '').trim();
+          const debut = (it.querySelector('.hs-debut')?.value || '').trim();
+          const fin = (it.querySelector('.hs-fin')?.value || '').trim();
+
+          const empId = it.dataset.empId || '';
+          const mEl = it.querySelector(`input[name="motif_${empId}"]:checked`);
+          const motif = mEl ? mEl.value : '';
+
+          if (!poste) { valid = false; errors.push(`Heures supp (salarié #${num}) : le poste est obligatoire.`); }
+          if (!nom) { valid = false; errors.push(`Heures supp (salarié #${num}) : le nom est obligatoire.`); }
+
+          if (!debut || !TIME_RE.test(debut)) {
+            valid = false;
+            errors.push(`Heures supp (salarié #${num}) : heure début invalide (format xxHxxmin).`);
+          }
+          if (!fin || !TIME_RE.test(fin)) {
+            valid = false;
+            errors.push(`Heures supp (salarié #${num}) : heure fin invalide (format xxHxxmin).`);
+          }
+
+          const hours = computeEmployeeDuration(it);
+          if (!(typeof hours === 'number' && isFinite(hours) && hours >= 0)) {
+            valid = false;
+            errors.push(`Heures supp (salarié #${num}) : durée impossible à calculer.`);
+          }
+
+          if (!motif) {
+            valid = false;
+            errors.push(`Heures supp (salarié #${num}) : sélectionne un motif.`);
+          }
+
+          if (motif === '1' || motif === '2') {
+            const absNom = (it.querySelector('.hs-abs-nom')?.value || '').trim();
+            const prevuDebut = (it.querySelector('.hs-prevu-debut')?.value || '').trim();
+            const prevuFin = (it.querySelector('.hs-prevu-fin')?.value || '').trim();
+
+            if (!absNom) {
+              valid = false;
+              errors.push(`Heures supp (salarié #${num}) : nom du salarié absent obligatoire.`);
+            }
+            if (!prevuDebut || !TIME_RE.test(prevuDebut) || !prevuFin || !TIME_RE.test(prevuFin)) {
+              valid = false;
+              errors.push(`Heures supp (salarié #${num}) : shift prévu obligatoire (format xxHxxmin).`);
+            }
+          }
+
+          if (motif === '3') {
+            const rNom = (it.querySelector('.hs-retard-nom')?.value || '').trim();
+            const rMin = (it.querySelector('.hs-retard-min')?.value || '').trim();
+            const rMoment = (it.querySelector('.hs-retard-moment')?.value || '').trim();
+
+            const minVal = parseInt(rMin, 10);
+            if (!rNom) {
+              valid = false;
+              errors.push(`Heures supp (salarié #${num}) : indique quel salarié est en retard.`);
+            }
+            if (!rMin || !isFinite(minVal) || minVal <= 0) {
+              valid = false;
+              errors.push(`Heures supp (salarié #${num}) : indique le retard en minutes (> 0).`);
+            }
+            if (!rMoment) {
+              valid = false;
+              errors.push(`Heures supp (salarié #${num}) : indique à quel moment dans le service le retard a impacté.`);
+            }
+          }
+
+          if (motif === '4' || motif === '5') {
+            const detail = (it.querySelector('.hs-detail')?.value || '').trim();
+            if (!detail) {
+              valid = false;
+              errors.push(`Heures supp (salarié #${num}) : détail obligatoire pour ce motif.`);
+            }
+          }
+        });
+
+        // Mettre à jour la productivité
+        recomputeHS();
       }
+
 
       if (!valid) {
         resultEl.innerHTML = `
@@ -884,8 +1785,7 @@
 
       return valid;
     }
-
-    function setLoading(isLoading) {
+function setLoading(isLoading) {
       submitBtn.disabled = isLoading;
       submitSpinner.classList.toggle('hidden', !isLoading);
       submitLabel.textContent = isLoading ? 'Enregistrement en cours...' : 'Enregistrer le rapport';
