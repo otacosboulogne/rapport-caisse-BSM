@@ -1798,38 +1798,43 @@ submitBtn.addEventListener('click', () => {
 
   const data = collectForm();
 
-  google.script.run
-    .withSuccessHandler((j) => {
-      if (j && j.success) {
-        setStatus({ type: 'ok', message: 'Rapport enregistré avec succès' });
-        resultEl.innerHTML = `
-          <div class="note">
-            Rapport enregistré&nbsp;:
-            <a href="${j.fileUrl}" target="_blank" rel="noopener noreferrer">
-              Ouvrir le PDF dans Google Drive
-            </a>
-          </div>
-        `;
-      } else {
-        setStatus({ type: 'neg', message: "Erreur lors de l'enregistrement" });
-        resultEl.innerHTML = `
-          <div class="note note-ghost">
-            Erreur&nbsp;: ${j?.error || "Échec de l'enregistrement du rapport."}
-          </div>
-        `;
-      }
-      setLoading(false);
-    })
-    .withFailureHandler((err) => {
-      setStatus({ type: 'neg', message: 'Erreur serveur' });
+  submitBtn.addEventListener('click', async () => {
+  if (!validateForm()) return;
+
+  setLoading(true);
+  setStatus({ type: 'info', message: 'Enregistrement du rapport en cours...' });
+
+  const data = collectForm();
+
+  try {
+    const res = await fetch('https://caisseetrh.contact-otacosbsm.workers.dev/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+      body: JSON.stringify(data),
+    });
+
+    const j = await res.json();
+
+    if (j.success) {
+      setStatus({ type: 'ok', message: 'Rapport enregistré avec succès' });
       resultEl.innerHTML = `
-        <div class="note note-ghost">
-          Erreur serveur&nbsp;: ${err?.message || err}
+        <div class="note">
+          Rapport enregistré&nbsp;:
+          <a href="${j.fileUrl}" target="_blank" rel="noopener noreferrer">
+            Ouvrir le PDF dans Google Drive
+          </a>
         </div>
       `;
-      setLoading(false);
-    })
-    .createReport(data);
+    } else {
+      setStatus({ type: 'neg', message: "Erreur lors de l'enregistrement" });
+      resultEl.innerHTML = `<div class="note note-ghost">Erreur : ${j.error || "Échec"} </div>`;
+    }
+  } catch (err) {
+    setStatus({ type: 'neg', message: 'Erreur réseau' });
+    resultEl.innerHTML = `<div class="note note-ghost">Erreur réseau : ${err.message}</div>`;
+  } finally {
+    setLoading(false);
+  }
 });
    
   </script>
