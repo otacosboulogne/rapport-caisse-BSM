@@ -1801,10 +1801,10 @@ function setLoading(isLoading) {
 
       try {
         const res = await fetch(APPS_SCRIPT_WEBAPP_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data)
-        });
+  method: 'POST',
+  headers: { 'Content-Type': 'text/plain; charset=utf-8' }, // ✅ pas de preflight
+  body: JSON.stringify(data)
+});
 
         const j = await res.json();
 
